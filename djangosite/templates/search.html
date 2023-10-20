@@ -1,0 +1,26 @@
+<div  class="container-fluid my-3">
+    <form class="form-inline row" method="GET" >
+        <div class="form-group col-md-4 my-2">
+            <select class="form-control custom-select" name="location">
+                <option value="" selected disabled hidden>Location</option>
+                <option value=None></option>
+                {% for location in locations %}
+                    <option value = {{location.id}}>{{location.name}}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group col-md-4 my-2">
+            <select class="form-control custom-select" name="station_to">
+                <option value="" selected disabled hidden>Measurement</option>
+                <option value=None></option>
+                {% for measurement in measurements %}
+                    <option value = {{measurement.id}}>{{measurement.name}} ({{measurement.unit.name}})</option>
+                {% endfor %}
+            </select>
+        </div>
+       
+        <div class="form-group col-md-1 my-2">
+            <button type="submit" class="btn w-100 btn-primary bi bi-search "></button>
+        </div>
+    </form>
+</div >
