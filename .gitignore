@@ -11,6 +11,7 @@ venv
 # Django
 *.log
 *.pot
+static/
 
 # vscode
 .vscode/
