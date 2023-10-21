@@ -1,10 +1,10 @@
 from django.db import models
+from datetime import date, time
 
 class Location(models.Model):
     name = models.CharField(max_length=255)
-    latitude = models.FloatField()
-    logtitude = models.FloatField()
-    altitude = models.FloatField()
+    latitude = models.CharField(max_length=255)
+    logtitude = models.CharField(max_length=255)
 
     def __str__(self):
         return self.name
@@ -28,9 +28,10 @@ class Timestamps(models.Model):
     measurement = models.ForeignKey(Measurement,on_delete=models.CASCADE)
     value = models.FloatField()
     location = models.ForeignKey(Location,on_delete=models.CASCADE)
-    time = models.DateTimeField()
+    date = models.DateField(default=date.today)
+    time = models.TimeField(default=time(12, 0)) 
 
     def __str__(self):
-        return f"{self.id} {self.measurement.name}"
+        return f"{self.id} {self.measurement.name} {self.location.name}"
 
 
