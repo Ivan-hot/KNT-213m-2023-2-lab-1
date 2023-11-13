@@ -4,7 +4,13 @@ from .models import Measurement
 from .models import Timestamps
 from datetime import datetime
 from django.db.models import Q
- 
+from django.http import HttpRequest, HttpResponse
+from .models import Unit_Mesure
+from rest_framework import decorators
+from rest_framework.response import Response
+from rest_framework.request import Request
+from django.db import transaction
+
 def index(request):
     locations = Location.objects.all()
     measurements = Measurement.objects.all()
@@ -27,3 +33,19 @@ def index(request):
     timestamps = Timestamps.objects.filter(filter).order_by('-date','time')
     
     return render(request, "index.html",{"locations": locations, "measurements": measurements,"timestamps": timestamps, "current_date":str(current_date)})
+
+@decorators.api_view(['post'])
+@transaction.atomic
+def timeStamps(request:Request):
+    for timestamp in request.data: 
+        location = timestamp.get("location")
+        locObject, locCreated = Location.objects.get_or_create(**location)
+        locId = locObject.id
+        date = timestamp.get("date")
+        time = timestamp.get("time")
+        for measurement in timestamp.get("measurment"):
+            unit,_ = Unit_Mesure.objects.get_or_create(name = measurement.get("unitName"))
+            measObject,_ = Measurement.objects.get_or_create(name = measurement.get("name"),defaults={"description":measurement.get("description"),"unit":unit})
+            timeStampObject = Timestamps.objects.create(measurement = measObject, location = locObject, date = date, time = time, value = measurement.get("value"))
+    return Response()
+            
