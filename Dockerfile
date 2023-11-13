@@ -9,9 +9,9 @@ RUN apt install -y python3-pip
 WORKDIR /app
 
 COPY ./requirements.txt /app/requirements.txt
-
+COPY ./deployRequirements.txt /app/deployRequirements.txt
 RUN pip3 install --upgrade pip
-RUN pip3 install -r requirements.txt
+RUN pip3 install -r deployRequirements.txt
 
 COPY . /app/
 
