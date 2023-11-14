@@ -1,4 +1,4 @@
 Django==4.2.6
-uwsgi==2.0.22
 tzdata==2023.3
 requests==2.31.0
+djangorestframework==3.14.0
