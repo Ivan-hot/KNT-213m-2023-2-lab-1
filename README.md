@@ -49,3 +49,15 @@ default password: admin
 ### Link
 
 http://127.0.0.1:9000/
+
+## _Weather station_
+
+Configure BAZA_URL in weather_station.urls.py. <br>
+If using djangosite in docker container with port 9000 then this port should be specified in BAZA_URL<br>
+If using local runserver of djangosite with port 8000 then this port should be specified in BAZA_URL<br>
+
+### Run weather station
+
+```
+python -m weather_station.main
+```

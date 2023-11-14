@@ -26,3 +26,6 @@ dist/
 
 # Db
 *.sqlite3
+
+# Other
+*.json
