@@ -4,7 +4,7 @@ from datetime import date, time
 class Location(models.Model):
     name = models.CharField(max_length=255)
     latitude = models.CharField(max_length=255)
-    logtitude = models.CharField(max_length=255)
+    longtitude = models.CharField(max_length=255)
 
     def __str__(self):
         return self.name
