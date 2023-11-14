@@ -19,7 +19,7 @@ def get_weather_task() -> None:
 
 
 def send_weather_task() -> None:
-    logger.info('TASK: get weather')
+    logger.info('TASK: send weather')
     resp = requests.post(urls.BAZA_URL, json=file_utils.read_json())
     if resp.status_code == 200:
         file_utils.flush_json()
