@@ -1,10 +1,10 @@
 import random
 import requests
 import logging
-from . import file_utils
-from . import urls
-from . import weather_provider
-from .locations import locations
+import file_utils
+import urls
+import weather_provider
+from locations import locations
 
 
 logger = logging.getLogger(__name__)

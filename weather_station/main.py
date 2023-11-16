@@ -1,13 +1,14 @@
 import time
 import logging
 
-from . import constants
-from . import tasks
+import constants
+import tasks
 
 if __name__ == "__main__":
     c_handler = logging.StreamHandler()
     c_handler.setLevel(logging.INFO)
-    c_format = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    c_format = logging.Formatter(
+        '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     c_handler.setFormatter(c_format)
 
     logging.basicConfig(level=logging.DEBUG, handlers=[c_handler])
@@ -27,9 +28,10 @@ def main():
             try:
                 task()
             except Exception as e:
-                logger.error('While processing task an error was occurred: %s', e)
+                logger.error(
+                    'While processing task an error was occurred: %s', e)
             time.sleep(constants.COOLDOWN_SEC)
 
 
-if __name__ == "__main__":  
+if __name__ == "__main__":
     main()
