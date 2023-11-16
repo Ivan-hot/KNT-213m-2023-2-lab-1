@@ -1,15 +1,15 @@
-import pandas as pd 
+import pandas as pd
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.model_selection import train_test_split
 import joblib
 
 
-def data_processing (filename): 
-    column_to_read=['temp',
-    'feels_like','temp_min','temp_max','pressure','humidity','wind_speed','wind_deg','rain_1h','snow_1h','clouds_all','weather_main']
-    data=pd.read_csv(filename, usecols=columns_to_read)
+def data_processing(filename):
+    column_to_read = ['temp',
+                      'feels_like', 'temp_min', 'temp_max', 'pressure', 'humidity', 'wind_speed', 'wind_deg', 'rain_1h', 'snow_1h', 'clouds_all', 'weather_main']
+    data = pd.read_csv(filename, usecols=column_to_read)
 
-    data=data.fillna(0)
+    data = data.fillna(0)
 
     # Кодування категоріальних ознак (weather_main) за допомогою Label Encoding
     label_encoder = LabelEncoder()
@@ -24,7 +24,7 @@ def data_processing (filename):
     scaler = StandardScaler()
     X = scaler.fit_transform(X)
 
-    X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=42)
+    X_train, X_test, Y_train, Y_test = train_test_split(
+        X, Y, test_size=0.2, random_state=42)
 
-    return X_train, X_test, Y_train, Y_test; 
-
+    return X_train, X_test, Y_train, Y_test
