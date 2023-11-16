@@ -3,9 +3,9 @@ import dto
 
 locations: list[dto.Location] = [
     {
-        "name": "Kyiv",
-        "latitude": "51.5072N",
-        "longtitude": "0.1276W"
+        "name": "Washington",
+        "latitude": "47.751076N",
+        "longtitude": "120.740135W"
     },
 
 ]
