@@ -5,8 +5,7 @@ import joblib
 
 
 def data_processing(filename):
-    column_to_read = ['temp',
-                      'feels_like', 'temp_min', 'temp_max', 'pressure', 'humidity', 'wind_speed', 'wind_deg', 'rain_1h', 'snow_1h', 'clouds_all', 'weather_main']
+    column_to_read = ['temp', 'feels_like', 'temp_min', 'temp_max', 'pressure', 'humidity', 'wind_speed', 'wind_deg', 'rain_1h', 'snow_1h', 'clouds_all', 'weather_main']
     data = pd.read_csv(filename, usecols=column_to_read)
 
     data = data.fillna(0)
