@@ -1,6 +1,3 @@
-# Copyright (c) 2021 Celadon Development LLC, All rights reserved.
-# Author Konstantin Dudkin <konstantin.dudkin@celadonsoft.com>
-
 from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
 

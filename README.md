@@ -26,6 +26,8 @@ pip install -U pip
 pip install -r requirements.txt
 ```
 
+# Lab 1
+
 ## _Local deployment_
 
 ### Build docker image
@@ -50,6 +52,8 @@ default password: admin
 
 http://127.0.0.1:9000/
 
+# Lab 2
+
 ## _Weather station_
 
 Configure BAZA_URL in weather_station.urls.py. <br>
@@ -60,4 +64,15 @@ If using local runserver of djangosite with port 8000 then this port should be s
 
 ```
 python -m weather_station.main
+```
+
+# Lab 3
+
+## _CSV import_
+
+To fill up the database with data for analysis use file weather_datasetUSA.csv.
+To use it run command
+
+```
+python manage.py todb -f ./model_for_predict/weather_datasetUSA.csv
 ```
