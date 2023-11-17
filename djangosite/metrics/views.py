@@ -8,6 +8,7 @@ from rest_framework import decorators
 from rest_framework.response import Response
 from rest_framework.request import Request
 from django.db import transaction
+from services import generate_metrics_plot
 
 def index(request):
     locations = Location.objects.all()
@@ -31,6 +32,20 @@ def index(request):
     timestamps = Timestamps.objects.filter(filter).order_by('-date','time')
     
     return render(request, "index.html",{"locations": locations, "measurements": measurements,"timestamps": timestamps, "current_date":str(current_date)})
+
+def index_pre(request):
+    locations = Location.objects.all()
+    measurements = Measurement.objects.all()
+    current_date = datetime.today()
+
+    selected_location = request.GET.get("location")
+    selected_measurement = request.GET.get("measurement")
+    selected_date_from = request.GET.get("date_from")
+    selected_date_to = request.GET.get("date_to")
+
+    generate_metrics_plot(selected_measurement, selected_date_from, selected_date_to)
+
+    return render(request, "index_pre.html",{"locations": locations, "measurements": measurements, "current_date":str(current_date)})
 
 @decorators.api_view(['post'])
 @transaction.atomic
