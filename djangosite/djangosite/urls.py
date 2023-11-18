@@ -7,8 +7,8 @@ from rest_framework import routers
 router = routers.DefaultRouter(trailing_slash=False)
 
 urlpatterns = [
-     path("admin/", admin.site.urls),
-    path("", views.index),
+    path("admin/", admin.site.urls),
+    path("", views.main_index),
     path("api/timestamps", views.timeStamps),
     path("graphics/", views.index_pre),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
