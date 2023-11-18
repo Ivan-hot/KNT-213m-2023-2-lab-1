@@ -15,14 +15,14 @@ class TimestampMetrics(TypedDict):
 
 
 def get_timestamps_by_measure(
-    m: models.MetricEnum, 
-    start_date: OptionalDate = None, 
+    m: models.MetricEnum,
+    start_date: OptionalDate = None,
     end_date: OptionalDate = None
 ) -> tuple[TimestampMetrics]:
     mes = models.Measurement.objects.get(name=m)
-    qs =models.Timestamps.objects \
-            .filter(measurement=mes) \
-            .values('value', 'date', 'time')
+    qs = models.Timestamps.objects \
+        .filter(measurement=mes) \
+        .values('value', 'date', 'time')
     if (start_date is not None):
         qs = qs.filter(date__gte=start_date)
     if (start_date is not None):
@@ -34,11 +34,11 @@ def get_timestamps_by_measure(
 
 def generate_metrics_plot(t: models.MetricEnum, s: OptionalDate = None, e: OptionalDate = None):
     metrix = get_timestamps_by_measure(t)
-    datetimes = tuple(map(lambda m: datetime.datetime.combine(m['date'],m['time']), metrix))
+    datetimes = tuple(
+        map(lambda m: datetime.datetime.combine(m['date'], m['time']), metrix))
     if t == models.MetricEnum.weather_main:
         values = tuple(map(lambda m: m['value'], metrix))
     else:
         values = tuple(map(lambda m: float(m['value']), metrix))
     plt.plot(datetimes, values)
     plt.savefig(f'{t}_{s}-{e}', format='png')
-

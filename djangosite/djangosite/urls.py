@@ -10,6 +10,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", views.main_index),
     path("api/timestamps", views.timeStamps),
-    path("graphics/", views.index_pre),
+    path("graphics/", views.analysis_index),
+    path("classification/", views.classification_index),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 urlpatterns += router.urls

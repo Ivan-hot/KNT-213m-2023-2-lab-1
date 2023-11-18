@@ -8,7 +8,8 @@ from rest_framework import decorators
 from rest_framework.response import Response
 from rest_framework.request import Request
 from django.db import transaction
-# from services import generate_metrics_plot
+from .services import generate_metrics_plot
+from django.db.models import Min, Max
 
 
 def main_index(request):
@@ -40,19 +41,33 @@ def main_index(request):
                                                  "selected_location": int(selected_location), "selected_measurement": int(selected_measurement), "selected_date": str(selected_date)})
 
 
-def index_pre(request):
+def analysis_index(request):
     locations = Location.objects.all()
     measurements = Measurement.objects.all()
     current_date = datetime.today()
 
-    selected_location = request.GET.get("location")
-    selected_measurement = request.GET.get("measurement")
-    selected_date_from = request.GET.get("date_from")
-    selected_date_to = request.GET.get("date_to")
+    selected_location = int(request.GET.get("location", 0))
+    selected_measurement = int(request.GET.get("measurement", 0))
+    selected_date_from = request.GET.get("date_from", current_date)
+    selected_date_to = request.GET.get("date_to", current_date)
 
-    # generate_metrics_plot(selected_measurement, selected_date_from, selected_date_to)
+    if selected_measurement:
+        generate_metrics_plot(selected_measurement,
+                              selected_date_from, selected_date_to)
 
-    return render(request, "index_pre.html", {"locations": locations, "measurements": measurements, "current_date": str(current_date)})
+    return render(request, "./analysis/index.html", {"locations": locations, "measurements": measurements, "current_date": str(current_date), "selected_date_to": str(selected_date_to), "selected_date_from": str(selected_date_from),  "selected_location": int(selected_location), "selected_measurement": int(selected_measurement)})
+
+
+def classification_index(request):
+    measurements = Measurement.objects.all()
+    form_data = []
+    for measurement in measurements:
+        if measurement.unit != 'category':
+            print(measurement.name)
+            min_value = Timestamps.objects.filter(
+                measurement__id=measurement.id).order_by("value").first().value
+            print(min_value)
+    return render(request, "./classification/index.html", {})
 
 
 @decorators.api_view(['post'])
