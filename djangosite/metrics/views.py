@@ -8,8 +8,9 @@ from rest_framework import decorators
 from rest_framework.response import Response
 from rest_framework.request import Request
 from django.db import transaction
-from .services import generate_metrics_plot
+from .services import generate_metrics_plot, classify_weather_by
 from django.db.models import Min, Max
+import numpy as np
 
 
 def main_index(request):
@@ -59,15 +60,35 @@ def analysis_index(request):
 
 
 def classification_index(request):
+    query_params = request.GET
+    if len(query_params):
+        arr_data = []
+        for key, value in query_params.items():
+            arr_data.append(float(value))
+        arr_data = np.array(arr_data).reshape(1, -1)
+        result, message = classify_weather_by(arr_data)
+    else:
+        result = ''
+        message = ''
     measurements = Measurement.objects.all()
     form_data = []
     for measurement in measurements:
         if measurement.unit != 'category':
-            print(measurement.name)
-            min_value = Timestamps.objects.filter(
-                measurement__id=measurement.id).order_by("value").first().value
-            print(min_value)
-    return render(request, "./classification/index.html", {})
+            values = Timestamps.objects.filter(
+                measurement__id=measurement.id).values_list('value', flat=True)
+            float_values = [
+                float(value) if value is not None and value != '' else 0 for value in values]
+            float_values.sort()
+            min_value = float_values[0]
+            max_value = float_values[-1]
+            num_steps = 1000
+            step = (max_value - min_value) / num_steps
+            value = query_params.get(
+                str(measurement.id)) if query_params else None
+            form_data.append(
+                {"measurement": measurement, "min_value": min_value, "max_value": max_value, "step": step, "value": value})
+
+    return render(request, "./classification/index.html", {"form_data": form_data, "result": result, "message": message})
 
 
 @decorators.api_view(['post'])

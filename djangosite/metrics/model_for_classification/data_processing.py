@@ -4,8 +4,9 @@ from sklearn.model_selection import train_test_split
 import joblib
 
 
-def data_processing(filename):
-    column_to_read = ['temp', 'feels_like', 'temp_min', 'temp_max', 'pressure', 'humidity', 'wind_speed', 'wind_deg', 'rain_1h', 'snow_1h', 'clouds_all', 'weather_main']
+def data_processing(filename, file_label):
+    column_to_read = ['temp', 'feels_like', 'temp_min', 'temp_max', 'pressure', 'humidity',
+                      'wind_speed', 'wind_deg', 'rain_1h', 'snow_1h', 'clouds_all', 'weather_main']
     data = pd.read_csv(filename, usecols=column_to_read)
 
     data = data.fillna(0)
@@ -14,7 +15,7 @@ def data_processing(filename):
     label_encoder = LabelEncoder()
     data['weather_main'] = label_encoder.fit_transform(data['weather_main'])
 
-    joblib.dump(label_encoder, 'label_encoder.joblib')
+    joblib.dump(label_encoder, file_label)
 
     X = data.drop('weather_main', axis=1)
     Y = data['weather_main']

@@ -3,6 +3,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 from typing import TypedDict
 from . import models
+from .model_for_classification.classify_data import classify_data
 
 matplotlib.use('Qt5Agg')
 OptionalDate = datetime.date | None
@@ -42,3 +43,7 @@ def generate_metrics_plot(t: models.MetricEnum, s: OptionalDate = None, e: Optio
         values = tuple(map(lambda m: float(m['value']), metrix))
     plt.plot(datetimes, values)
     plt.savefig(f'{t}_{s}-{e}', format='png')
+
+
+def classify_weather_by(measurements):
+    return classify_data(measurements)
