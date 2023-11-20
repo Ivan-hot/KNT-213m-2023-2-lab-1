@@ -54,14 +54,12 @@ def analysis_index(request):
     selected_date_to = request.GET.get("date_to", current_date)
 
     if selected_measurement and selected_location:
-        file_image = settings.MEDIA_ROOT + "\\"+generate_metrics_plot(selected_location, selected_measurement,
-                                                                      selected_date_from, selected_date_to)
+        images = generate_metrics_plot(selected_location, selected_measurement,
+                                       selected_date_from, selected_date_to)
     else:
-        file_image = None
+        images = []
 
-    print(file_image)
-
-    return render(request, "./analysis/index.html", {"locations": locations, "measurements": measurements, "current_date": str(current_date), "selected_date_to": str(selected_date_to), "selected_date_from": str(selected_date_from),  "selected_location": int(selected_location), "selected_measurement": int(selected_measurement), "file_image": file_image})
+    return render(request, "./analysis/index.html", {"locations": locations, "measurements": measurements, "current_date": str(current_date), "selected_date_to": str(selected_date_to), "selected_date_from": str(selected_date_from),  "selected_location": int(selected_location), "selected_measurement": int(selected_measurement), "images": images})
 
 
 def classification_index(request):
