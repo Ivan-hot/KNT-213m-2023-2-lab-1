@@ -11,6 +11,7 @@ from django.db import transaction
 from .services import generate_metrics_plot, classify_weather_by
 from django.db.models import Min, Max
 import numpy as np
+from django.conf import settings
 
 
 def main_index(request):
@@ -53,8 +54,8 @@ def analysis_index(request):
     selected_date_to = request.GET.get("date_to", current_date)
 
     if selected_measurement and selected_location:
-        file_image = generate_metrics_plot(selected_location, selected_measurement,
-                                           selected_date_from, selected_date_to)
+        file_image = settings.MEDIA_ROOT + "\\"+generate_metrics_plot(selected_location, selected_measurement,
+                                                                      selected_date_from, selected_date_to)
     else:
         file_image = None
 

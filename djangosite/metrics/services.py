@@ -10,7 +10,7 @@ from .model_for_classification.classify_data import classify_data
 matplotlib.use('Qt5Agg')
 OptionalDate = datetime.date | None
 
-file_image = "D:/UNIVERSITY/5 course/LESSONS 1/IoT systems/KNT-213m-2023-2-lab-1/djangosite/metrics/image_measurement.png"
+file_image = "image_measurement.png"
 
 
 class TimestampMetrics(TypedDict):
@@ -45,12 +45,15 @@ def generate_metrics_plot(l: int, t: int, s: OptionalDate = None, e: OptionalDat
         values = tuple(map(lambda m: m['value'], metrix))
     else:
         values = tuple(map(lambda m: float(m['value']), metrix))
-    plt.useTkAgg = False
 
-    plt.plot(datetimes, values)
+    plt.useTkAgg = False
     plt.xlabel('Datetime')
     plt.ylabel('Values')
     plt.title('Historical Data Plot')
+    plt.grid(True)
+    plt.plot(datetimes, values)
+    plt.savefig("./media/" + file_image, format='png')
+
     return file_image
 
 
