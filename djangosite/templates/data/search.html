@@ -1,0 +1,30 @@
+<div  class="container-fluid my-3">
+    <form class="form-inline row" method="GET" >
+        <div class="form-group col-md-4 my-2">
+            <select class="form-control custom-select" name="location">
+                <option value="" selected disabled hidden>Location</option>
+                <option value=0  {% if location.id == selected_location %} selected {% endif %}></option>
+                {% for location in locations %}
+                    <option value = {{location.id}} {% if location.id == selected_location %} selected {% endif %}>{{location.name}} {{location.longitude}} {{location.latitude}}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group col-md-4 my-2">
+            <select class="form-control custom-select" name="measurement">
+                <option value="" selected disabled hidden>Measurement</option>
+                <option value=0 {% if measurement.id == selected_measurement %} selected{% endif %}></option>
+                {% for measurement in measurements %}
+                    <option value = {{measurement.id}} {% if measurement.id == selected_measurement %} selected{% endif %}>{{measurement.name}} ({{measurement.unit}})</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group col-md-3 my-2">
+            <input type="date" class="form-control" max={{ current_date }} name= "input_date" placeholder="Date" value={{selected_date}}>
+        </div>
+       
+        <div class="form-group col-md-1 my-2">
+            <button type="submit" class="btn w-100 btn-success bi bi-search "></button>
+        </div>
+    </form>
+</div >

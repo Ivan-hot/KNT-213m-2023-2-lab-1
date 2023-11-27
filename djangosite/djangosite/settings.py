@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'metrics.apps.MetricsConfig',
     'rest_framework',
+
 ]
 
 MIDDLEWARE = [

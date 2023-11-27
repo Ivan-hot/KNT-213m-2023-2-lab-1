@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import Location
 from .models import Measurement
 from .models import Timestamps
@@ -11,7 +11,20 @@ from rest_framework.request import Request
 from django.db import transaction
 from .services import generate_metrics_plot, classify_weather_by
 import numpy as np
+from .forms import TimestampEntryForm
 
+def data_index(request):
+    form_class = TimestampEntryForm
+
+    if request.method == 'POST':
+        form = form_class(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('success') 
+    else:
+        form = form_class()
+
+    return render(request, "./data/index.html", {'form': form})
 
 def main_index(request: HttpRequest) -> HttpResponse:
     if request.method != 'GET':
