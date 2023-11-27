@@ -4,17 +4,19 @@ from .models import Measurement
 from .models import Timestamps
 from datetime import datetime
 from django.db.models import Q
+from django.http import HttpRequest, HttpResponse, HttpResponseNotAllowed
 from rest_framework import decorators
 from rest_framework.response import Response
 from rest_framework.request import Request
 from django.db import transaction
 from .services import generate_metrics_plot, classify_weather_by
-from django.db.models import Min, Max
 import numpy as np
-from django.conf import settings
 
 
-def main_index(request):
+def main_index(request: HttpRequest) -> HttpResponse:
+    if request.method != 'GET':
+        return HttpResponseNotAllowed(permitted_methods=['get'])
+
     locations = Location.objects.all()
     measurements = Measurement.objects.all()
     current_date = datetime.today()
@@ -43,7 +45,11 @@ def main_index(request):
                                                  "selected_location": int(selected_location), "selected_measurement": int(selected_measurement), "selected_date": str(selected_date)})
 
 
-def analysis_index(request):
+def analysis_index(request: HttpRequest) -> HttpResponse:
+    if request.method != 'GET':
+        return HttpResponseNotAllowed(permitted_methods=['get'])
+
+
     locations = Location.objects.all()
     measurements = Measurement.objects.all()
     current_date = datetime.today()
@@ -62,7 +68,10 @@ def analysis_index(request):
     return render(request, "./analysis/index.html", {"locations": locations, "measurements": measurements, "current_date": str(current_date), "selected_date_to": str(selected_date_to), "selected_date_from": str(selected_date_from),  "selected_location": int(selected_location), "selected_measurement": int(selected_measurement), "images": images})
 
 
-def classification_index(request):
+def classification_index(request: HttpRequest) -> HttpResponse:
+    if request.method != 'GET':
+        return HttpResponseNotAllowed(permitted_methods=['get'])
+
     query_params = request.GET
     if len(query_params):
         arr_data = []
@@ -96,7 +105,7 @@ def classification_index(request):
 
 @decorators.api_view(['post'])
 @transaction.atomic
-def timeStamps(request: Request):
+def timeStamps(request: Request) -> Response:
     for timestamp in request.data:
         location = timestamp.get("location")
         locObject, _ = Location.objects.get_or_create(**location)
