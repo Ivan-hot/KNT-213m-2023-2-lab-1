@@ -8,7 +8,7 @@ router = routers.DefaultRouter(trailing_slash=False)
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("", views.main_index),
+    path("", views.main_index, name="main_index"),
     path("api/timestamps", views.timeStamps),
     path("analysis/", views.analysis_index, name='analysis_index'),
     path("classification/", views.classification_index,
