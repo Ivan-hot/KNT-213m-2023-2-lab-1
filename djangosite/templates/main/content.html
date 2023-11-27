@@ -1,0 +1,28 @@
+<div>
+    <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Measurement</th>
+            <th scope="col">Value</th>
+            <th scope="col">Location</th>
+            <th scope="col">Date</th>
+            <th scope="col">Time</th>
+          </tr>
+        </thead>
+        <tbody>
+            {% for timestamp in timestamps%}
+             <tr>
+                <th scope="row">{{timestamp.id}}</th>
+                <td>{{timestamp.measurement.name}}</td>
+                <td>{{timestamp.value}} {{timestamp.measurement.unit}}</td>
+                <td>{{timestamp.location.name}}</td>
+                <td>{{timestamp.date}}</td>
+                <td>{{timestamp.time}}</td>
+              </tr>
+            {% endfor %}
+            
+        </tbody>
+
+    </table>
+</div>

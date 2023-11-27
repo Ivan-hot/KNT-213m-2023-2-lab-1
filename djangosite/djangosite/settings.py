@@ -15,6 +15,7 @@ import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+PROJECT_PATH = os.path.abspath(os.path.dirname(__name__))
 
 
 # Quick-start development settings - unsuitable for production
@@ -27,7 +28,7 @@ SECRET_KEY = 'django-insecure-ybg@j1ii0d=e4e06lt^x*4l7g9da$)q2+w=e4^9o^ol#2n+q1k
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
-CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:8000","http://127.0.0.1"]
+CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:8000", "http://127.0.0.1"]
 CORS_ALLOW_ALL_ORIGINS = True
 
 
@@ -119,6 +120,7 @@ USE_TZ = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
+
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')

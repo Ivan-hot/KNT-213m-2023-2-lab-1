@@ -1,0 +1,24 @@
+<div class="card  col-md-6 mx-md-auto">
+  <div class="card-header align-content-center">
+    Weather classification
+  </div>
+  <form method="GET" class="col-md-11 mx-auto my-21">
+    {% for data in form_data %}
+      <div class="form-group row my-2">
+        <label for={{ data.measurement.name }} class="col-4">{{ data.measurement.name }}</label>
+        <div class="col-8">
+          <input type="number" class="form-control" name={{ data.measurement.id }}
+          max={{ data.max_value }} min={{ data.min_value }} step={{ data.step }} placeholder={{ data.measurement.name }}  {% if data.value is not None %} value={{data.value}} {% endif %} required>
+        </div>
+      </div>
+    {% endfor %}
+    <div class="form-group row my-2">
+      <label for="res" class="col-4">Classified as</label>
+      <label for="result" class="col-8">{{result}}</label>
+    </div>
+    <div class="form-group row my-2">
+      <label for="res" class="col-12">{{message}}</label>
+    </div>
+    <button type="submit" class="btn btn-primary col-12 mx-auto d-block">Submit</button>
+  </form>
+</div>
