@@ -11,20 +11,27 @@ from rest_framework.request import Request
 from django.db import transaction
 from .services import generate_metrics_plot, classify_weather_by
 import numpy as np
-from .forms import TimestampEntryForm
+from .forms import TimestampEntryForm, LocationEntryForm, MeasurementEntryForm
 
 def data_index(request):
-    form_class = TimestampEntryForm
+    selected_date = request.GET.get("model", "Timestamps")
+    if selected_date == "Timestamps": 
+        form_class = TimestampEntryForm
+    elif  selected_date == "Location": 
+        form_class = LocationEntryForm
+    else: 
+        form_class = MeasurementEntryForm
 
+    message = ''
     if request.method == 'POST':
         form = form_class(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('success') 
+            message = "succsess"
     else:
         form = form_class()
 
-    return render(request, "./data/index.html", {'form': form})
+    return render(request, "./data/index.html", {'form': form, 'message': message })
 
 def main_index(request: HttpRequest) -> HttpResponse:
     if request.method != 'GET':
