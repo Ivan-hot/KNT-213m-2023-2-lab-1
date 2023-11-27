@@ -4,17 +4,18 @@ from .models import Measurement
 from .models import Timestamps
 from datetime import datetime
 from django.db.models import Q
+from django.http import HttpRequest, HttpResponse, HttpResponseNotAllowed
 from rest_framework import decorators
 from rest_framework.response import Response
 from rest_framework.request import Request
 from django.db import transaction
 from .services import generate_metrics_plot, classify_weather_by
-from django.db.models import Min, Max
 import numpy as np
-from django.conf import settings
 
 
-def main_index(request):
+def main_index(request: HttpRequest) -> HttpResponse:
+    if request.method != 'GET':
+        return HttpResponseNotAllowed(permitted_methods=['get'])
     try:
         locations = Location.objects.all()
         measurements = Measurement.objects.all()
@@ -46,7 +47,10 @@ def main_index(request):
         return render(request, "error_template.html", {"error_message": str(e)}, status=500)
 
 
-def analysis_index(request):
+def analysis_index(request: HttpRequest) -> HttpResponse:
+    if request.method != 'GET':
+        return HttpResponseNotAllowed(permitted_methods=['get'])
+
     try:
         locations = Location.objects.all()
         measurements = Measurement.objects.all()
@@ -68,7 +72,9 @@ def analysis_index(request):
         return render(request, "error_template.html", {"error_message": str(e)}, status=500)
 
 
-def classification_index(request):
+def classification_index(request: HttpRequest) -> HttpResponse:
+    if request.method != 'GET':
+        return HttpResponseNotAllowed(permitted_methods=['get'])
     try:
         query_params = request.GET
         if len(query_params):
@@ -98,14 +104,14 @@ def classification_index(request):
                 form_data.append(
                     {"measurement": measurement, "min_value": min_value, "max_value": max_value, "step": step, "value": value})
 
-        return render(request, "./classification/index.html", {"form_data": form_data, "result": result, "message": message})
+            return render(request, "./classification/index.html", {"form_data": form_data, "result": result, "message": message})
     except Exception as e:
         return render(request, "error_template.html", {"error_message": str(e)}, status=500)
 
 
 @decorators.api_view(['post'])
 @transaction.atomic
-def timeStamps(request: Request):
+def timeStamps(request: Request) -> Response:
     for timestamp in request.data:
         location = timestamp.get("location")
         locObject, _ = Location.objects.get_or_create(**location)
