@@ -13,25 +13,30 @@ from .services import generate_metrics_plot, classify_weather_by
 import numpy as np
 from .forms import TimestampEntryForm, LocationEntryForm, MeasurementEntryForm
 
-def data_index(request):
-    selected_date = request.GET.get("model", "Timestamps")
-    if selected_date == "Timestamps": 
-        form_class = TimestampEntryForm
-    elif  selected_date == "Location": 
-        form_class = LocationEntryForm
-    else: 
-        form_class = MeasurementEntryForm
 
+def data_index(request):
+    options = ["Timestamps", "Location", "Measurement"]
+    selected_model = request.GET.get("model", "Timestamps")
+    if selected_model == "Timestamps":
+        form_class = TimestampEntryForm
+    elif selected_model == "Location":
+        form_class = LocationEntryForm
+    else:
+        form_class = MeasurementEntryForm
     message = ''
     if request.method == 'POST':
         form = form_class(request.POST)
         if form.is_valid():
             form.save()
-            message = "succsess"
+            message = "Data has been successfully added"
+            form = form_class()
+        else:
+            message = "Data is not valid"
     else:
         form = form_class()
+    print(selected_model)
+    return render(request, "./data/index.html", {'form': form, 'message': message, "selected_model": selected_model, "options": options})
 
-    return render(request, "./data/index.html", {'form': form, 'message': message })
 
 def main_index(request: HttpRequest) -> HttpResponse:
     if request.method != 'GET':
