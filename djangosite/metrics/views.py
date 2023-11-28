@@ -142,18 +142,18 @@ def timeStamps(request: Request) -> Response:
         locObject, _ = Location.objects.get_or_create(**location)
         date = timestamp.get("date")
         time = timestamp.get("time")
-        for measurement in timestamp.get("measurment"):
+        for measurement in timestamp.get("measurement"):
             measObject, _ = Measurement.objects.get_or_create(
                 name=measurement.get("name"),
                 defaults={
                     "description": measurement.get("description"),
-                    "unit": measurement.get("unitName"),
+                    "unit": measurement.get("unit"),
                 })
             Timestamps.objects.create(
                 measurement=measObject,
                 location=locObject,
                 date=date,
                 time=time,
-                value=measurement.get("value"),
+                value=str(measurement.get("value")),
             )
     return Response()

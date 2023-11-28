@@ -20,14 +20,14 @@ def get_weather_data(location) -> list[dto.Measurement] | None:
         measurements["rain_1h"]["value"] = weather_data["rain"]["1h"] if "rain" in weather_data else 0
         measurements["snow_1h"]["value"] = weather_data["snow"]["1h"] if "snow" in weather_data else 0
         measurements["clouds_all"]["value"] = weather_data["clouds"]["all"]
-        measurements["weather_main"]["value"] = weather_data["weather"]["main"]
+        measurements["weather_main"]["value"] = weather_data["weather"][0]["main"]
 
         measurement = list(measurements.values())
         cur_datetime = datetime.now()
         date = cur_datetime.date().strftime("%Y-%m-%d")
         time = cur_datetime.time().strftime("%H:%M:%S")
         timestamp = {"location": location,
-                     "measurment": measurement, "date": date, "time": time}
+                     "measurement": measurement, "date": date, "time": time}
         return timestamp
     else:
         return None
