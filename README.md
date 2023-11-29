@@ -76,3 +76,11 @@ To use it run command
 ```
 python manage.py todb -f ./model_for_predict/weather_datasetUSA.csv
 ```
+
+# Lab 4
+
+## _Run tests_
+
+```
+python manage.py test
+```
