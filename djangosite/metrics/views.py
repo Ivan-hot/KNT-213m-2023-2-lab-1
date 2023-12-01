@@ -129,7 +129,7 @@ def classification_index(request: HttpRequest) -> HttpResponse:
                 form_data.append(
                     {"measurement": measurement, "min_value": min_value, "max_value": max_value, "step": step, "value": value})
 
-            return render(request, "./classification/index.html", {"form_data": form_data, "result": result, "message": message})
+        return render(request, "./classification/index.html", {"form_data": form_data, "result": result, "message": message})
     except Exception as e:
         return render(request, "error_template.html", {"error_message": str(e)}, status=500)
 

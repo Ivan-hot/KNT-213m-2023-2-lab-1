@@ -4,11 +4,8 @@ from ...models import Measurement, Timestamps
 
 
 class ClassificationIndexViewTests(TestCase):
-    # def setUp(self):
-    # Ваша підготовка даних, якщо потрібно, наприклад, створення об'єктів моделей
 
     def test_classification_index_view_with_params(self):
-        # Створіть деякі тестові дані для передачі у запит
         test_data = {
             "temp": -7.17,
             "feels_like": -12.73,
