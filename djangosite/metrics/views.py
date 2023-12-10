@@ -12,10 +12,13 @@ from django.db import transaction
 from .services import generate_metrics_plot, classify_weather_by
 import numpy as np
 from .forms import TimestampEntryForm, LocationEntryForm, MeasurementEntryForm
-from djangosite.db import *
+from djangosite import db
+from django.views.decorators.cache import cache_page
+from . import selectors
 
 
-def data_index(request):
+@cache_page(60)
+def data_index(request: HttpRequest):
     options = ["Timestamps", "Location", "Measurement"]
     selected_model = request.GET.get("model", "Timestamps")
     if selected_model == "Timestamps":
@@ -39,19 +42,19 @@ def data_index(request):
     return render(request, "./data/index.html", {'form': form, 'message': message, "selected_model": selected_model, "options": options})
 
 
+@cache_page(600)
 def main_index(request: HttpRequest) -> HttpResponse:
     if request.method != 'GET':
         return HttpResponseNotAllowed(permitted_methods=['get'])
     try:
-        locations = Location.objects.all()
-        measurements = Measurement.objects.all()
+        locations = selectors.select_locations()
+        measurements = selectors.select_measurements()
         current_date = datetime.today()
 
         selected_location = int(request.GET.get("location", 0))
         selected_measurement = int(request.GET.get("measurement", 0))
         selected_date = request.GET.get("input_date", current_date)
         filter = Q()
-
         if selected_location:
             print("true")
             filter &= Q(location__id=selected_location)
@@ -65,21 +68,21 @@ def main_index(request: HttpRequest) -> HttpResponse:
 
         filter &= Q(date=selected_date)
 
-        timestamps = Timestamps.objects.filter(
-            filter).order_by('-date', 'time')
+        timestamps = sorted(selectors.select_timestamps(), key='date', reverse=True)
 
         return render(request, "./main/index.html", {"locations": locations, "measurements": measurements, "timestamps": timestamps, "current_date": str(current_date), "selected_location": int(selected_location), "selected_measurement": int(selected_measurement), "selected_date": str(selected_date)}, status=200)
     except Exception as e:
         return render(request, "error_template.html", {"error_message": str(e)}, status=500)
 
 
+@cache_page(600)
 def analysis_index(request: HttpRequest) -> HttpResponse:
     if request.method != 'GET':
         return HttpResponseNotAllowed(permitted_methods=['get'])
 
     try:
-        locations = Location.objects.all()
-        measurements = Measurement.objects.all()
+        locations = selectors.select_locations()
+        measurements = selectors.select_measurements()
         current_date = datetime.today()
 
         selected_location = int(request.GET.get("location", 0))
@@ -98,6 +101,7 @@ def analysis_index(request: HttpRequest) -> HttpResponse:
         return render(request, "error_template.html", {"error_message": str(e)}, status=500)
 
 
+@cache_page(600)
 def classification_index(request: HttpRequest) -> HttpResponse:
     if request.method != 'GET':
         return HttpResponseNotAllowed(permitted_methods=['get'])
@@ -112,12 +116,11 @@ def classification_index(request: HttpRequest) -> HttpResponse:
         else:
             result = ''
             message = ''
-        measurements = Measurement.objects.all()
+        measurements = selectors.select_measurements()
         form_data = []
         for measurement in measurements:
             if measurement.unit != 'category':
-                values = Timestamps.objects.filter(
-                    measurement__id=measurement.id).values_list('value', flat=True)
+                values = selectors.select_timestamps(measurement.id, only_values=True, flat=True)
                 float_values = [
                     float(value) if value is not None and value != '' else 0 for value in values]
                 float_values.sort()
@@ -133,7 +136,6 @@ def classification_index(request: HttpRequest) -> HttpResponse:
         return render(request, "./classification/index.html", {"form_data": form_data, "result": result, "message": message})
     except Exception as e:
         return render(request, "error_template.html", {"error_message": str(e)}, status=500)
-
 
 @decorators.api_view(['post'])
 @transaction.atomic

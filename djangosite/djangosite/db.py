@@ -1,7 +1,7 @@
 from pymongo import MongoClient
 from pymongo.database import Database
 from pymongo.errors import ConnectionFailure, OperationFailure
-from constants import *
+from .constants import *
 from datetime import datetime
 
 
@@ -35,6 +35,18 @@ def get_document(Coll_Name: str, id: int, name: str):
         print(f"Error: {e}")
 
 
+def get_all_documents(Coll_Name: str, ):
+    documents = []
+    try:
+        db = connect_db()
+        collection = db[Coll_Name]
+        documents = collection.find({})
+    except Exception as e:
+        print(f"Error: {e}")
+    finally:
+        return documents
+
+
 def insert_location(name: str, latitude: str,  longitude: str):
     try:
         db = connect_db()
@@ -50,9 +62,16 @@ def get_location(id=None, name=None):
     get_document(COLL_LOCATION, id, name)
 
 
+def get_all_locations():
+    get_all_documents(COLL_LOCATION)
+
+
 def get_measurement(id=None, name=None):
     get_document(COLL_MEASUREMENT, id, name)
 
+
+def get_all_measurements():
+    get_all_documents(COLL_MEASUREMENT)
 
 def insert_measurement(name: str, description: str,  unit: str):
     try:
@@ -97,6 +116,10 @@ def get_timestamp(location_id=None, measurement_id=None, date=datetime.now().dat
 
     except Exception as e:
         print(f"Error: {e}")
+
+
+def get_all_timestamps():
+    get_all_documents(COLL_TIMESTAMPS)
 
 
 def get_timestamp_between_date(location_id=None, measurement_id=None, start_date=None, end_date=None):

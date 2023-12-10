@@ -88,6 +88,13 @@ DATABASES = {
     }
 }
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'djongo',
+#         'NAME': 'db',
+#     }
+# }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -145,4 +152,18 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
     ],
+}
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django_cache_with_mongodb.MongoDBCache',
+        "LOCATION": "mongodb://127.0.0.1:27017/cachedb",
+        "OPTIONS": {
+            "DATABASE": "cachedb",  # in not supplied in URI
+            "COLLECTION": "cache_collection",  # default: django_cache
+            # Any Connection Options supported by pymongo
+        },
+        "TIMEOUT": 3600, # either set TIMEOUT or MAX_ENTRIES, not both
+        "MAX_ENTRIES": 10000, # either set MAX_ENTRIES or TIMEOUT, not both
+    }
 }
