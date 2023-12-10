@@ -2,7 +2,6 @@ from django.db import models
 from datetime import date, time
 
 from enum import Enum
-from django import models
 
 class MetricEnum(str, Enum):
     temp = "Temperature"

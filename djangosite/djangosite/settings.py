@@ -88,12 +88,15 @@ DATABASES = {
     }
 }
 
-client = MongoClient('localhost', 27017)
+client = MongoClient('127.0.0.1', 27017)
 
 db = client['SeriesDB']
-
+print(f'MONGO DB : {db}')
 series_collection = db['series']
-
+insert_res = series_collection.insert_one({'key': 'hui'})
+find_res = series_collection.find_one(filter={'_id': 'key'})
+print(f'MONGO DB INSERT RES: {insert_res}')
+print(f'MONGO DB FIND RES: {find_res}')
 
 
 # Password validation
