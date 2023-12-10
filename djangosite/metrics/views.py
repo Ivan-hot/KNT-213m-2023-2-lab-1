@@ -12,6 +12,7 @@ from django.db import transaction
 from .services import generate_metrics_plot, classify_weather_by
 import numpy as np
 from .forms import TimestampEntryForm, LocationEntryForm, MeasurementEntryForm
+from djangosite.db import *
 
 
 def data_index(request):

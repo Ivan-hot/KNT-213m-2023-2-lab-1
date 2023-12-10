@@ -3,6 +3,7 @@ DB_PORT = 27017
 DB_ADRESS = '127.0.0.1'
 COLL_LOCATION = "Location"
 COLL_MEASUREMENT = "Measurement"
+COLL_TIMESTAMPS = "Timestamp"
 Metric_Dict = {
     'temp': "Temperature",
     'feels_like': "Temperature Feels Like",

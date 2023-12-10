@@ -2,6 +2,7 @@ from pymongo import MongoClient
 from pymongo.database import Database
 from pymongo.errors import ConnectionFailure, OperationFailure
 from constants import *
+from datetime import datetime
 
 
 def connect_db() -> Database:
@@ -18,21 +19,17 @@ def connect_db() -> Database:
         print(f'Error: {e}')
 
 
-def get_document_by_id(Coll_Name: str, id: int):
+def get_document(Coll_Name: str, id: int, name: str):
     try:
         db = connect_db()
         collection = db[Coll_Name]
-        document = collection.find_one({"_id": id})
-        return document
-    except Exception as e:
-        print(f"Error: {e}")
-
-
-def get_document_by_name(Coll_Name: str, name: str):
-    try:
-        db = connect_db()
-        collection = db[Coll_Name]
-        document = collection.find_one({"name": name})
+        if id:
+            document = collection.find_one({"_id": id})
+        elif name:
+            document = collection.find_one({"name": name})
+            print(document)
+        else:
+            document = list(collection.find())
         return document
     except Exception as e:
         print(f"Error: {e}")
@@ -49,12 +46,12 @@ def insert_location(name: str, latitude: str,  longitude: str):
         print(f"Error: {e}")
 
 
-def get_location_by_id(id: int):
-    get_document_by_id(COLL_LOCATION, id)
+def get_location(id=None, name=None):
+    get_document(COLL_LOCATION, id, name)
 
 
-def get_location_by_name(name: str):
-    get_document_by_name(COLL_LOCATION, name)
+def get_measurement(id=None, name=None):
+    get_document(COLL_MEASUREMENT, id, name)
 
 
 def insert_measurement(name: str, description: str,  unit: str):
@@ -62,15 +59,63 @@ def insert_measurement(name: str, description: str,  unit: str):
         db = connect_db()
         collection = db[COLL_MEASUREMENT]
         result = collection.insert_one(
-            {'name': Metric_Dict[name], 'description': description, "unit": unit})
-        return result.inserted_id
+            {'name': name, 'description': description, "unit": unit})
+        return result
     except Exception as e:
         print(f"Error: {e}")
 
 
-def get_measurement_by_id(id: int):
-    get_document_by_id(COLL_MEASUREMENT, id)
+def insert_timestamp(measurement_id: int, value: str, location_id: int, date: datetime.now().date(), time: datetime.now().time()):
+    try:
+        db = connect_db()
+        collection = db[COLL_MEASUREMENT]
+        measurement = get_measurement(id=measurement_id)
+        location = get_location(id=location_id)
+        result = collection.insert_one(
+            {'measurement': measurement, 'value': value, "location": location, "date": date, "time": time})
+        return result
+    except Exception as e:
+        print(f"Error: {e}")
 
 
-def get_location_by_name(name: str):
-    get_document_by_name(COLL_MEASUREMENT, name)
+def get_timestamp(location_id=None, measurement_id=None, date=datetime.now().date()):
+    filter = {}
+
+    if location_id is not None:
+        filter['location.id'] = location_id
+
+    if measurement_id is not None:
+        filter['measurement.id'] = measurement_id
+
+    filter['date'] = date
+    try:
+        db = connect_db()
+        collection = db[COLL_TIMESTAMPS]
+        documents = list(collection.find(
+            filter).sort([('date', -1), ('time', 1)]))
+        return documents
+
+    except Exception as e:
+        print(f"Error: {e}")
+
+
+def get_timestamp_between_date(location_id=None, measurement_id=None, start_date=None, end_date=None):
+    filter = {
+        'measurement.id': measurement_id,
+        'location.id': location_id,
+        'value': {'$ne': ''}
+    }
+    if start_date is not None:
+        filter['date']['$gte'] = start_date
+
+    if end_date is not None:
+        filter['date']['$lte'] = end_date
+
+    try:
+        db = connect_db()
+        collection = db[COLL_TIMESTAMPS]
+        documents = list(collection.find(filter))
+        return documents
+
+    except Exception as e:
+        print(f"Error: {e}")
