@@ -84,3 +84,11 @@ python manage.py todb -f ./model_for_predict/weather_datasetUSA.csv
 ```
 python manage.py test
 ```
+
+# Lab 6
+
+### Install MongoDB
+
+```
+pip install pymongo
+```
