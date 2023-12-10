@@ -11,12 +11,12 @@ class Location(TypedDict):
 class Measurement(TypedDict):
     name: str
     description: str
-    unitName: str
+    unit: str
     value: float | int
 
 
 class Metric(TypedDict):
     location: Location
-    measurment: Measurement
+    measurement: Measurement
     date: date
     time: time
