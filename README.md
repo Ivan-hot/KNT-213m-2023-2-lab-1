@@ -90,5 +90,5 @@ python manage.py test
 ### Install MongoDB
 
 ```
-pip install pymongo
+docker run --name lab6.1-mongo --net=host -d mongo:latest
 ```
