@@ -1,9 +1,10 @@
 from pymongo import MongoClient
+from pymongo.database import Database
 from pymongo.errors import ConnectionFailure, OperationFailure
 from constants import *
 
 
-def connect_db():
+def connect_db() -> Database:
     try:
         client = MongoClient(DB_ADRESS, DB_PORT)
         db = client[DB_NAME]
@@ -17,7 +18,7 @@ def connect_db():
         print(f'Error: {e}')
 
 
-def get_document_by_id(Coll_Name, id):
+def get_document_by_id(Coll_Name: str, id: int):
     try:
         db = connect_db()
         collection = db[Coll_Name]
@@ -27,7 +28,7 @@ def get_document_by_id(Coll_Name, id):
         print(f"Error: {e}")
 
 
-def get_document_by_name(Coll_Name, name):
+def get_document_by_name(Coll_Name: str, name: str):
     try:
         db = connect_db()
         collection = db[Coll_Name]
