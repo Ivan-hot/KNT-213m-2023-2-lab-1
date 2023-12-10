@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
-from pymongo import MongoClient
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -87,16 +87,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
-client = MongoClient('127.0.0.1', 27017)
-
-db = client['SeriesDB']
-print(f'MONGO DB : {db}')
-series_collection = db['series']
-insert_res = series_collection.insert_one({'key': 'hui'})
-find_res = series_collection.find_one(filter={'_id': 'key'})
-print(f'MONGO DB INSERT RES: {insert_res}')
-print(f'MONGO DB FIND RES: {find_res}')
 
 
 # Password validation
