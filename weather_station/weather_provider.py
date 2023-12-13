@@ -11,6 +11,7 @@ def get_weather_data(location) -> list[dto.Measurement] | None:
     if response.status_code == 200:
         weather_data = response.json()
         measurements["temp"]["value"] = weather_data["main"]["temp"]
+        measurements["feels_like"]["value"] = weather_data["main"]["feels_like"]
         measurements["temp_min"]["value"] = weather_data["main"]["temp"]
         measurements["temp_max"]["value"] = weather_data["main"]["temp"]
         measurements["pressure"]["value"] = weather_data["main"]["pressure"]

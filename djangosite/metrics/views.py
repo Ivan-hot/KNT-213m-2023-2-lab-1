@@ -15,6 +15,7 @@ from .forms import TimestampEntryForm, LocationEntryForm, MeasurementEntryForm
 from djangosite import db
 from django.views.decorators.cache import cache_page
 from . import selectors
+from djangosite.db import get_or_create_location, get_or_create_measurement, insert_timestamp
 
 
 @cache_page(60)
@@ -51,26 +52,15 @@ def main_index(request: HttpRequest) -> HttpResponse:
         measurements = selectors.select_measurements()
         current_date = datetime.today()
 
-        selected_location = int(request.GET.get("location", 0))
-        selected_measurement = int(request.GET.get("measurement", 0))
+        selected_location = request.GET.get("location", 0)
+        selected_measurement = request.GET.get("measurement", 0)
         selected_date = request.GET.get("input_date", current_date)
-        filter = Q()
-        if selected_location:
-            print("true")
-            filter &= Q(location__id=selected_location)
-        else:
-            selected_location = 0
 
-        if selected_measurement:
-            filter &= Q(measurement__id=selected_measurement)
-        else:
-            selected_measurement = 0
+        timestamps = selectors.select_timestamps(
+            selected_location, selected_measurement, selected_date)
+        timestamps = sorted(timestamps, key=lambda t: t.date, reverse=True)
 
-        filter &= Q(date=selected_date)
-
-        timestamps = sorted(selectors.select_timestamps(), key='date', reverse=True)
-
-        return render(request, "./main/index.html", {"locations": locations, "measurements": measurements, "timestamps": timestamps, "current_date": str(current_date), "selected_location": int(selected_location), "selected_measurement": int(selected_measurement), "selected_date": str(selected_date)}, status=200)
+        return render(request, "./main/index.html", {"locations": locations, "measurements": measurements, "timestamps": timestamps, "current_date": str(current_date), "selected_location": selected_location, "selected_measurement": selected_measurement, "selected_date": str(selected_date)}, status=200)
     except Exception as e:
         return render(request, "error_template.html", {"error_message": str(e)}, status=500)
 
@@ -120,7 +110,8 @@ def classification_index(request: HttpRequest) -> HttpResponse:
         form_data = []
         for measurement in measurements:
             if measurement.unit != 'category':
-                values = selectors.select_timestamps(measurement.id, only_values=True, flat=True)
+                values = selectors.select_timestamps(
+                    measurement.id, only_values=True, flat=True)
                 float_values = [
                     float(value) if value is not None and value != '' else 0 for value in values]
                 float_values.sort()
@@ -137,26 +128,24 @@ def classification_index(request: HttpRequest) -> HttpResponse:
     except Exception as e:
         return render(request, "error_template.html", {"error_message": str(e)}, status=500)
 
+
 @decorators.api_view(['post'])
 @transaction.atomic
 def timeStamps(request: Request) -> Response:
     for timestamp in request.data:
-        location = timestamp.get("location")
-        locObject, _ = Location.objects.get_or_create(**location)
+        location = timestamp["location"]
+        loc_object = get_or_create_location(location)
         date = timestamp.get("date")
         time = timestamp.get("time")
         for measurement in timestamp.get("measurement"):
-            measObject, _ = Measurement.objects.get_or_create(
-                name=measurement.get("name"),
-                defaults={
-                    "description": measurement.get("description"),
-                    "unit": measurement.get("unit"),
-                })
-            Timestamps.objects.create(
-                measurement=measObject,
-                location=locObject,
+            value = measurement["value"]
+            del measurement["value"]
+            meas_object = get_or_create_measurement(measurement)
+            insert_timestamp(
+                measurement=meas_object,
+                location=loc_object,
                 date=date,
                 time=time,
-                value=str(measurement.get("value")),
+                value=value,
             )
     return Response()

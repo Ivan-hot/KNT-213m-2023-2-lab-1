@@ -1,5 +1,7 @@
 from djangosite import db as cachedb
 from . import models
+from datetime import date
+from django.db.models import Q
 
 
 def select_measurements():
@@ -11,25 +13,33 @@ def select_measurements():
     finally:
         if not measurements:
             measurements = models.Measurement.objects.all()
-    return measurements   
+    return measurements
 
 
-def select_timestamps(measurement_id: int | None = None, only_values: bool = False, flat: bool = False):
+def select_timestamps(selected_location: int, selected_measurement: int, selected_date: date):
     timestamps = []
     try:
-        timestamps = cachedb.get_all_timestamps()
+        timestamps = cachedb.get_timestamp_by_params(
+            location_id=selected_location, measurement_id=selected_measurement, date=selected_date)
+        return timestamps
     except Exception as e:
         print(f'Error occured while selecting timestamps: {e}')
     finally:
         if not timestamps:
-            timestamps = list(models.Timestamps.objects.all())
-            if measurement_id:
-                timestamps = filter(lambda t: t.measurement_id == measurement_id, timestamps)
-            if only_values:
-                if flat:
-                    timestamps = map(lambda t : t.value, timestamps)
-                else:
-                    timestamps = map(lambda t : {'value':t.value}, timestamps)
+            filter = Q()
+            if selected_location:
+                print("true")
+                filter &= Q(location__id=selected_location)
+            else:
+                selected_location = 0
+
+            if selected_measurement:
+                filter &= Q(measurement__id=selected_measurement)
+            else:
+                selected_measurement = 0
+
+            filter &= Q(date=selected_date)
+            timestamps = list(models.Timestamps.objects.filter(filter))
         return timestamps
 
 
