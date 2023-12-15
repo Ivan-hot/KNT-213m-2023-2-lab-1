@@ -16,7 +16,7 @@ def select_measurements():
     return measurements
 
 
-def select_timestamps(selected_location: int, selected_measurement: int, selected_date: date):
+def select_timestamps(selected_location=None, selected_measurement=None, selected_date=None):
     timestamps = []
     try:
         timestamps = cachedb.get_timestamp_by_params(

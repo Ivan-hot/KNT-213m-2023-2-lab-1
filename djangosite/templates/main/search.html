@@ -3,9 +3,9 @@
         <div class="form-group col-md-4 my-2">
             <select class="form-control custom-select" name="location">
                 <option value="" selected disabled hidden>Location</option>
-                <option value=0 {% if location.id==selected_location %} selected {% endif %}></option>
+                <option value=0 '{% if location.id == selected_location %} selected {% endif %}'></option>
                 {% for location in locations %}
-                <option value={{location._id}} {% if location.id==selected_location %} selected {% endif %}>
+                <option value={{location.id}} '{% if location.id == selected_location %} selected {% endif %}'>
                     {{location.name}} {{location.longitude}} {{location.latitude}}</option>
                 {% endfor %}
             </select>
@@ -13,10 +13,10 @@
         <div class="form-group col-md-4 my-2">
             <select class="form-control custom-select" name="measurement">
                 <option value="" selected disabled hidden>Measurement</option>
-                <option value=0 {% if measurement.id==selected_measurement %} selected{% endif %}></option>
+                <option value=0 '{% if measurement.id == selected_measurement %} selected {% endif %}'></option>
                 {% for measurement in measurements %}
-                <option value={{measurement._id}} {% if measurement.id==selected_measurement %} selected{% endif %}>
-                    {{measurement.name}} ({{measurement.unit}})</option>
+                <option value={{measurement.id}} '{% if measurement.id == selected_measurement %} selected {% endif %}'>
+                    {{measurement.full_name}} ({{measurement.unit}})</option>
                 {% endfor %}
             </select>
         </div>

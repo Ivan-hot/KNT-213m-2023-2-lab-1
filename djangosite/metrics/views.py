@@ -18,7 +18,7 @@ from . import selectors
 from djangosite.db import get_or_create_location, get_or_create_measurement, insert_timestamp
 
 
-@cache_page(60)
+'''@cache_page(60)
 def data_index(request: HttpRequest):
     options = ["Timestamps", "Location", "Measurement"]
     selected_model = request.GET.get("model", "Timestamps")
@@ -41,6 +41,7 @@ def data_index(request: HttpRequest):
         form = form_class()
     print(selected_model)
     return render(request, "./data/index.html", {'form': form, 'message': message, "selected_model": selected_model, "options": options})
+'''
 
 
 @cache_page(600)
@@ -52,13 +53,13 @@ def main_index(request: HttpRequest) -> HttpResponse:
         measurements = selectors.select_measurements()
         current_date = datetime.today()
 
-        selected_location = request.GET.get("location", 0)
-        selected_measurement = request.GET.get("measurement", 0)
+        selected_location = int(request.GET.get("location", 0))
+        selected_measurement = int(request.GET.get("measurement", 0))
         selected_date = request.GET.get("input_date", current_date)
 
         timestamps = selectors.select_timestamps(
             selected_location, selected_measurement, selected_date)
-        timestamps = sorted(timestamps, key=lambda t: t.date, reverse=True)
+        timestamps = sorted(timestamps, key=lambda t: t['date'], reverse=True)
 
         return render(request, "./main/index.html", {"locations": locations, "measurements": measurements, "timestamps": timestamps, "current_date": str(current_date), "selected_location": selected_location, "selected_measurement": selected_measurement, "selected_date": str(selected_date)}, status=200)
     except Exception as e:
@@ -109,18 +110,18 @@ def classification_index(request: HttpRequest) -> HttpResponse:
         measurements = selectors.select_measurements()
         form_data = []
         for measurement in measurements:
-            if measurement.unit != 'category':
-                values = selectors.select_timestamps(
-                    measurement.id, only_values=True, flat=True)
+            if measurement['unit'] != 'category':
+                timestamps = selectors.select_timestamps(
+                    selected_measurement=measurement['id'])
                 float_values = [
-                    float(value) if value is not None and value != '' else 0 for value in values]
+                    float(t["value"]) if t["value"] is not None and t["value"] != '' else 0 for t in timestamps]
                 float_values.sort()
                 min_value = float_values[0]
                 max_value = float_values[-1]
                 num_steps = 1000
                 step = (max_value - min_value) / num_steps
                 value = query_params.get(
-                    str(measurement.id)) if query_params else None
+                    str(measurement['id'])) if query_params else None
                 form_data.append(
                     {"measurement": measurement, "min_value": min_value, "max_value": max_value, "step": step, "value": value})
 

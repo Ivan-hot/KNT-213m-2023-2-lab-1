@@ -61,7 +61,7 @@ measurements: dict[str, dto.Measurement] = {
     "weather_main": {
         "name": "weather_main",
         "description": "Weather_Main represents the main weather condition or category, such as Clear, Clouds, Rain, etc. It provides a general description of the current weather.",
-        "unit": "degrees"
+        "unit": "category"
     }
 
 }

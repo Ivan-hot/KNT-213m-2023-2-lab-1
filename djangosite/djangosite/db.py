@@ -19,13 +19,23 @@ def connect_db() -> Database:
         print(f'Error: {e}')
 
 
+def get_latest_index(Coll_Name: str):
+    db = connect_db()
+    collection = db[Coll_Name]
+    latest_document = collection.find_one(sort=[('_id', -1)])
+    if latest_document:
+        return latest_document["id"]
+    else:
+        return 0
+
+
 def get_document(Coll_Name: str, id: str, name: str):
     try:
         document = []
         db = connect_db()
         collection = db[Coll_Name]
         if id:
-            document = collection.find_one({"_id": id})
+            document = collection.find_one({"id": id})
         elif name:
             document = list(collection.find({"name": name}))
         else:
@@ -39,9 +49,10 @@ def insert_location(name: str, latitude: str,  longitude: str):
     try:
         db = connect_db()
         collection = db[COLL_LOCATION]
+        id = get_latest_index(COLL_LOCATION)+1
         result = collection.insert_one(
-            {'name': name, 'latitude': latitude, "longitude": longitude})
-        return get_location(id=result.inserted_id)
+            {'name': name, 'latitude': latitude, "longitude": longitude, "id": id})
+        return get_location(id=id)
     except Exception as e:
         print(f"Error: {e}")
 
@@ -66,10 +77,15 @@ def insert_measurement(name: str, description: str,  unit: str):
     try:
         db = connect_db()
         collection = db[COLL_MEASUREMENT]
+        id = get_latest_index(COLL_MEASUREMENT)+1
+        if name in Metric_Dict:
+            full_name = Metric_Dict[name]
+        else:
+            return None
         result = collection.insert_one(
-            {'name': name, 'description': description, "unit": unit})
+            {'name': name, "full_name": full_name, 'description': description, "unit": unit, "id": id})
 
-        return get_measurement(id=result.inserted_id)
+        return get_measurement(id=id)
     except Exception as e:
         print(f"Error: {e}")
 
@@ -103,9 +119,10 @@ def insert_timestamp(measurement, value, location, date, time):
     try:
         db = connect_db()
         collection = db[COLL_TIMESTAMPS]
+        id = get_latest_index(COLL_TIMESTAMPS)+1
         result = collection.insert_one(
-            {'measurement': measurement, 'value': value, "location": location, "date": date, "time": time})
-        return get_timestamp_by_params(id=result.inserted_id)
+            {'measurement': measurement, 'value': value, "location": location, "date": date, "time": time, "id": id})
+        return get_timestamp_by_params(id=id)
     except Exception as e:
         print(f"Error: {e}")
 
@@ -113,26 +130,30 @@ def insert_timestamp(measurement, value, location, date, time):
 def get_timestamp_by_params(id=None, location_id=None, measurement_id=None, date=None, start_date=None, end_date=None):
 
     filter = {
-        'measurement.id': measurement_id,
-        'location.id': location_id,
         'value': {'$ne': ''}
     }
     if id:
         filter['id'] = id
-    if date:
-        filter['date'] = date
     else:
-        if start_date is not None:
-            filter['date']['$gte'] = start_date
+        if measurement_id:
+            filter['measurement.id'] = measurement_id
+        if location_id:
+            filter["location.id"] = location_id
+        if date:
+            filter['date'] = date
+        else:
+            if start_date is not None:
+                filter["date"] = {"$gte": start_date}
 
-        if end_date is not None:
-            filter['date']['$lte'] = end_date
+            if end_date is not None:
+                filter["date"] = filter.get("date", {})
+                filter["date"]["$lte"] = end_date
 
     try:
         db = connect_db()
         collection = db[COLL_TIMESTAMPS]
         documents = list(collection.find(filter))
-        return documents
+        return list(documents)
 
     except Exception as e:
         print(f"Error: {e}")

@@ -7,6 +7,7 @@ import io
 import base64
 from .model_for_classification.classify_data import classify_data
 from collections import Counter
+from djangosite.db import get_timestamp_by_params
 
 matplotlib.use('Qt5Agg')
 OptionalDate = datetime.date | None
@@ -24,15 +25,8 @@ def get_timestamps(
     start_date: OptionalDate = None,
     end_date: OptionalDate = None
 ) -> tuple[TimestampMetrics]:
-    qs = models.Timestamps.objects \
-        .filter(measurement__id=m, location__id=l) \
-        .exclude(value='') \
-        .select_related('measurement') \
-        .values('value', 'date', 'time', 'measurement__unit')
-    if (start_date is not None):
-        qs = qs.filter(date__gte=start_date)
-    if (start_date is not None):
-        qs = qs.filter(date__lte=end_date)
+    qs = get_timestamp_by_params(
+        location_id=l, measurement_id=m, start_date=start_date, end_date=end_date)
     return tuple(
         qs
     )
@@ -41,9 +35,9 @@ def get_timestamps(
 def generate_metrics_plot(l: int, t: int, s: OptionalDate = None, e: OptionalDate = None):
     metrix = get_timestamps(l, t, s, e)
     datetimes = tuple(
-        map(lambda m: datetime.datetime.combine(m['date'], m['time']), metrix))
+        map(lambda m: datetime.datetime.strptime(m['date'] + " " + m['time'], '%Y-%m-%d %H:%M:%S'), metrix))
     if (len(metrix)):
-        if metrix[0]["measurement__unit"] == "category":
+        if metrix[0]["measurement"]["unit"] == "category":
             values = tuple(map(lambda m: m['value'], metrix))
         else:
             values = tuple(map(lambda m: float(m['value']), metrix))
@@ -53,7 +47,7 @@ def generate_metrics_plot(l: int, t: int, s: OptionalDate = None, e: OptionalDat
     plt.useTkAgg = False
     images = []
     plt.clf()
-    if (metrix[0]["measurement__unit"] == "category"):
+    if (metrix[0]["measurement"]["unit"] == "category"):
         buffer = io.BytesIO()
         data_freq = Counter(values)
         unique_values = list(data_freq.keys())
